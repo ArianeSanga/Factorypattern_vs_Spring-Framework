@@ -1,44 +1,42 @@
-# Factorypattern_vs_SpringsFramework
+# Factory pattern vs SpringsFramework
 
-💳 Factory Pattern vs Spring Framework
 Sistema de Pagamento com Injeção de Dependência em Java e Spring
 Autores: Ariane Sanga, Ellen Gonçalves
 
-📝 Introdução ao Problema
-Em um sistema de e-commerce, o pagamento é uma parte crítica.
-O desafio foi criar uma solução com três métodos de pagamento: Cartão de Crédito, PIX e PayPal.
+### Introdução ao problema
+Desenvolvimento de um sistema de pagamentos para um e-commerce, onde ele precisa oferecer suporte a pagamentos por três métodos:
+- Cartão de crédito 
+- PIX; ou 
+- PayPal. 
 
-Cada versão do sistema usa um único método de pagamento, definido na construção, e não em tempo de execução.
+A ideia é que cada instância do sistema use apenas um dos métodos de pagamento, que deve ser definido no instante em que é gerado o build do projeto.
 
-❓ O que é Injeção de Dependência?
-Injeção de Dependência (Dependency Injection - DI) é um padrão que:
+#### O projeto precisa conter:
+- Uma interface PaymentProcessor com um método process(double amount).
+- Três implementações dessa interface, uma para cada meio de pagamento.
+- Um PaymentService que não conhece as implementações concretas – ele apenas depende da interface.
 
-🔄 Reduz o acoplamento entre classes
+#### Requisitos:
+- Manter o baixo acoplamento entre os componentes.
+- Resolver esse problema usando Java puro e padrões de projeto, como o Factory, mas também está avaliando adotar o padrão de injeção de dependências implementado pelo Spring Framework.
+- Desenvolver uma prova de conceito (Proof of Concept – PoC) do uso do Spring e compará-la com uma implementação tradicional, usando Java e padrões de projeto. Assim, vocês terão que desenvolver duas versões do sistema
 
-🔧 Aumenta a flexibilidade
+### Explicação sobre injeção de dependência
 
-🧪 Facilita os testes
 
-🛠️ Torna a manutenção mais simples
 
-O Spring Framework é um dos frameworks mais usados para aplicar esse padrão de forma robusta.
+### Implementação em Java puro
 
-🔧 Implementação com Java Puro (Factory)
-Interface
+##### Classe PaymentProcessor
 java
-Copiar
-Editar
-package com.example.factory.service;
-
 public interface PaymentProcessor {
     void process(double amount);
 }
-Implementações
-Cartão de Crédito:
+
+
+##### Classe para os métodos de pagamento
 
 java
-Copiar
-Editar
 public class CreditCardPaymentProcessor implements PaymentProcessor {
     @Override
     public void process(double amount) {
@@ -46,11 +44,9 @@ public class CreditCardPaymentProcessor implements PaymentProcessor {
         System.out.println("Payment value: $ " + amount);
     }
 }
-PIX:
+
 
 java
-Copiar
-Editar
 public class PixPaymentProcessor implements PaymentProcessor {
     @Override
     public void process(double amount) {
@@ -58,11 +54,9 @@ public class PixPaymentProcessor implements PaymentProcessor {
         System.out.println("Payment value: $ " + amount);
     }
 }
-PayPal:
+
 
 java
-Copiar
-Editar
 public class PayPalPaymentProcessor implements PaymentProcessor {
     @Override
     public void process(double amount) {
@@ -70,10 +64,10 @@ public class PayPalPaymentProcessor implements PaymentProcessor {
         System.out.println("Payment value: $ " + amount);
     }
 }
-Factory
+
+##### Classe PaymentProcessorFactory
+
 java
-Copiar
-Editar
 public class PaymentProcessorFactory {
     public static PaymentProcessor getProcessor(String type) {
         switch (type.toLowerCase()) {
@@ -84,10 +78,10 @@ public class PaymentProcessorFactory {
         }
     }
 }
-Serviço de Pagamento
+
+##### Classe PaymentService
+
 java
-Copiar
-Editar
 public class PaymentService {
     private final PaymentProcessor processor;
 
@@ -99,20 +93,20 @@ public class PaymentService {
         processor.process(amount);
     }
 }
-🌱 Implementação com Spring Framework
-Interface
+
+
+### Implementação com Spring
+
+##### Interface
+
 java
-Copiar
-Editar
 public interface PaymentProcessor {
     void process(double amount);
 }
-Implementações
-Cartão de Crédito:
+
+##### Classe para os métodos de pagamento
 
 java
-Copiar
-Editar
 @Component
 @Qualifier("credit")
 public class CreditCardPaymentProcessor implements PaymentProcessor {
@@ -122,11 +116,9 @@ public class CreditCardPaymentProcessor implements PaymentProcessor {
         System.out.println("Payment value: $ " + amount);
     }
 }
-PIX:
+
 
 java
-Copiar
-Editar
 @Component
 @Qualifier("pix")
 public class PixPaymentProcessor implements PaymentProcessor {
@@ -136,11 +128,10 @@ public class PixPaymentProcessor implements PaymentProcessor {
         System.out.println("Payment value: $ " + amount);
     }
 }
-PayPal:
+
+##### Classe PaymentProcessor
 
 java
-Copiar
-Editar
 @Component
 @Qualifier("paypal")
 public class PayPalPaymentProcessor implements PaymentProcessor {
@@ -150,10 +141,10 @@ public class PayPalPaymentProcessor implements PaymentProcessor {
         System.out.println("Payment value: $ " + amount);
     }
 }
-Serviço de Pagamento com Spring
+
+##### Classe PaymentService
+
 java
-Copiar
-Editar
 @Service
 public class PaymentService {
 
@@ -165,10 +156,10 @@ public class PaymentService {
         paymentProcessor.process(amount);
     }
 }
-Classe Principal
+
+##### Classe principal (Main)
+
 java
-Copiar
-Editar
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
@@ -184,14 +175,12 @@ public class Application implements CommandLineRunner {
         paymentService.pay(350.00);
     }
 }
-📊 Comparação entre as Abordagens
-Critério	Java Puro (Factory)	Spring (Injeção de Dependência)
-🔗 Acoplamento	Médio (depende da Factory)	Baixo (injeção direta)
-🔄 Flexibilidade	Média (alteração manual)	Alta (muda o @Qualifier)
-🧪 Testabilidade	Média	Alta (mock fácil)
-🧠 Complexidade Inicial	Baixa	Média (requer estrutura Spring)
-📈 Escalabilidade	Limitada	Alta (ideal para sistemas grandes)
-✅ Conclusão
+
+
+### Comparação entre as abordagens
+
+
+### Conclusão
 A injeção de dependência torna o sistema mais modular, escalável e fácil de testar.
 
 A versão com Java puro é ideal para sistemas simples e didáticos.
